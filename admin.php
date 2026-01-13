@@ -9,7 +9,7 @@ session_start();
 // Simple Auth
 $ADMIN_PASSWORD = 'password'; // Default password - Change this!
 $CONFIG_FILE = __DIR__ . '/config.php';
-$VERSION = trim(file_get_contents(__DIR__ . '/VERSION') ?: '1.2.0');
+$VERSION = trim(file_get_contents(__DIR__ . '/VERSION') ?: '1.2.1');
 
 // Discover Languages
 $available_langs = [];

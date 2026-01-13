@@ -31,5 +31,5 @@ $gdpr_text_desc_it = 'Utilizziamo i cookie per migliorare la tua esperienza.';
 // 5. Branding (MANDATORY per License)
 // Modifying these lines to hide branding is a violation of the license.
 $gdpr_enable_branding = true;
-$gdpr_brand_name = 'Madness GDPR Consent System v1.2.0';
+$gdpr_brand_name = 'Madness GDPR Consent System v1.2.1';
 ?>

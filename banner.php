@@ -115,7 +115,9 @@ foreach ($enabled_langs as $lang) {
             <div class="gdpr-content">
                 <div class="gdpr-text">
                     <h3 id="gdpr-title">Privacy</h3>
-                    <p id="gdpr-text">This website uses cookies.</p>
+                    <p id="gdpr-text">This website uses cookies. <a
+                            href="<?php echo str_replace('gdpr/', '', $web_root); ?>privacy.php"
+                            style="color: var(--gdpr-accent); text-decoration: underline;">Privacy Policy</a></p>
                 </div>
                 <div class="gdpr-actions">
                     <button id="btn-accept" class="gdpr-btn gdpr-btn-accept">Accept</button>
@@ -170,6 +172,10 @@ foreach ($enabled_langs as $lang) {
                     </div>
                 </div>
                 <div class="gdpr-modal-footer">
+                    <div style="font-size: 0.8rem;">
+                        <a href="<?php echo str_replace('gdpr/', '', $web_root); ?>privacy.php"
+                            style="color: var(--gdpr-secondary); text-decoration: underline;">Privacy Policy</a>
+                    </div>
                     <?php if ($gdpr_enable_branding): ?>
                         <div class="gdpr-system-info"><?php echo $gdpr_brand_name; ?></div>
                     <?php endif; ?>

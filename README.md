@@ -1,5 +1,5 @@
 # Madness GDPR Consent System
-![Version](https://img.shields.io/badge/version-1.2.0-orange.svg)
+![Version](https://img.shields.io/badge/version-1.2.1-orange.svg)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
 
@@ -60,7 +60,13 @@ The system uses CSS variables. You can override them in your main CSS:
 
 ## Update Log
 
-### v1.2.0 (Current) - Compliance Pack
+### v1.2.1 (Current) - Transparency & Hardening
+- **Prior Consent Hardening**: Ensured zero-tracking on landing pages; GCM and dataLayer are initialized only after explicit consent.
+- **Rich Text Banner**: Modified `consent_manager.js` to support HTML in banner title and description for policy links.
+- **Transparency**: Added direct links to the Privacy Policy within the main banner and the Preferences Modal.
+- **Optimization**: Reduced non-essential storage writes to minimize the digital footprint.
+
+### v1.2.0 - Compliance Pack
 - **Total Script Blocking**: Switched to "Basic Consent Mode" for GA4. Tracking scripts are now injected only POST-consent.
 - **Proof of Consent**: Implemented server-side logging of consent actions with IP anonymization.
 - **Equal Prominence**: Updated UI to ensure Accept and Reject buttons have identical visual weight.

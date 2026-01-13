@@ -42,7 +42,7 @@ if (basename($_SERVER['PHP_SELF']) === 'policy.php') {
 
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="policy_style.css?v=<?php echo $gdpr_version ?? '1.2.0'; ?>">
+        <link rel="stylesheet" href="policy_style.css?v=<?php echo $gdpr_version ?? '1.2.1'; ?>">
         <title>Privacy Policy</title>
     </head>
 

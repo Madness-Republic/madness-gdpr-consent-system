@@ -13,10 +13,11 @@ class ConsentManager {
         this.cookieName = 'madness_gdpr_consent';
         this.cookieDuration = this.config.cookie_duration; // days
         this.consent = this.getStoredConsent();
-        this.initGoogleConsentMode();
 
-        // Activate scripts if consent is already present
+        // ONLY initialize Google Consent Mode if consent already exists
+        // This satisfies strict "Prior Consent" scanners (Basic Consent Mode)
         if (this.consent) {
+            this.initGoogleConsentMode();
             this.activateScripts(this.consent);
         }
 
@@ -32,6 +33,8 @@ class ConsentManager {
 
     // Initialize Google Consent Mode Defaults
     initGoogleConsentMode() {
+        if (window.gtag) return; // Already initialized
+
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         window.gtag = gtag;
@@ -127,6 +130,8 @@ class ConsentManager {
 
         document.cookie = this.cookieName + "=" + json + expires + "; path=/; SameSite=Lax; Secure";
 
+        // Ensure GCM is initialized before update
+        this.initGoogleConsentMode();
         this.updateGCM(preferences);
         this.activateScripts(preferences); // Activate generic scripts
         this.sendConsentLog(this.consent); // Send Proof of Consent
