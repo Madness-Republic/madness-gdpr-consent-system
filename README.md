@@ -1,4 +1,5 @@
-# Madness GDPR Consent System v1.2.0
+# Madness GDPR Consent System
+![Version](https://img.shields.io/badge/version-1.2.0-orange.svg)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
 
