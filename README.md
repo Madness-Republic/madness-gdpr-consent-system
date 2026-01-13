@@ -15,7 +15,8 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 
 ## Installation
 
-1. Copy the `gdpr` folder into your website's root directory.
+1. Create a folder named `gdpr` in your website's root directory and upload all the repository files into it.
+   *Note: The system is designed to run from within the `/gdpr/` directory.*
 2. Ensure `gdpr/logs/` has write permissions (chmod 755/775).
 3. Access the Admin Panel at yourdomain.com/gdpr/admin.php (Default password: `admin`).
     *   *Security Note: Change the password immediately in settings.*
