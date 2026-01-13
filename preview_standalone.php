@@ -20,7 +20,8 @@ foreach (glob(__DIR__ . '/languages/*.json') as $file) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="policy_style.css">
+    <?php $v = trim(@file_get_contents(__DIR__ . '/VERSION') ?: '1.2.0'); ?>
+    <link rel="stylesheet" href="policy_style.css?v=<?php echo $v; ?>">
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

@@ -9,6 +9,7 @@ session_start();
 // Simple Auth
 $ADMIN_PASSWORD = 'password'; // Default password - Change this!
 $CONFIG_FILE = __DIR__ . '/config.php';
+$VERSION = trim(file_get_contents(__DIR__ . '/VERSION') ?: '1.2.0');
 
 // Discover Languages
 $available_langs = [];
@@ -234,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
 
     // Fixed Branding
     $brand_enable = 'true';
-    $brand_text = "Madness GDPR Consent System v1.1.0";
+    $brand_text = "Madness GDPR Consent System v" . $VERSION;
 
     // Generate Content for Config
     $content = "<?php\n";
@@ -248,6 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $content .= "\$gdpr_ga4_id = " . var_export($g_id, true) . "; // Google Analytics 4 Measurement ID\n";
     $content .= "\$gdpr_cookie_duration = $c_dur; // Days\n";
     $content .= "\$gdpr_default_lang = " . var_export($d_lang, true) . ";\n";
+    $content .= "\$gdpr_version = " . var_export($VERSION, true) . ";\n";
     $content .= "\$gdpr_enabled_languages = " . var_export($enabled_langs, true) . ";\n\n";
     $content .= "// 3. Style Settings\n";
     $content .= "\$gdpr_col_primary = " . var_export($col_p, true) . ";\n";
@@ -672,7 +674,7 @@ foreach ($enabled_langs_to_load as $lang) {
             <div style="flex:1;">
                 <h1 style="margin-bottom: 5px;"><?php echo $t['title']; ?> ⚙️</h1>
                 <p style="margin: 0; font-size: 0.8rem; color: #94a3b8; font-weight: 500;">
-                    <?php echo $gdpr_brand_name; ?> | Last Update: 13 Jan 2026
+                    Madness GDPR v<?php echo $VERSION; ?> | Last Update: <?php echo date("d M Y", filemtime(__DIR__ . '/VERSION')); ?>
                 </p>
             </div>
             <nav class="nav-links" style="display:flex; align-items:center; gap:10px;">

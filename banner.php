@@ -12,6 +12,8 @@ if (!isset($gdpr_col_text))
     $gdpr_col_text = '#ffffff';
 if (!isset($gdpr_bg_opacity))
     $gdpr_bg_opacity = 95;
+if (!isset($gdpr_version))
+    $gdpr_version = trim(@file_get_contents(__DIR__ . '/VERSION') ?: '1.2.0');
 
 // Text Defaults
 if (!isset($gdpr_text_title_it))
@@ -44,7 +46,7 @@ $web_root = '/' . ltrim(str_replace('\\', '/', $web_root), '/') . '/';
 // Fix double slashes
 $web_root = str_replace('//', '/', $web_root);
 ?>
-<link rel="stylesheet" href="<?php echo $web_root; ?>cookie_style.css">
+<link rel="stylesheet" href="<?php echo $web_root; ?>cookie_style.css?v=<?php echo $gdpr_version; ?>">
 <style>
     :root {
         --gdpr-primary:
@@ -106,7 +108,7 @@ foreach ($enabled_langs as $lang) {
     };
 </script>
     <script<?php echo isset($nonce) ? ' nonce="' . $nonce . '"' : ''; ?>
-        src="<?php echo $web_root; ?>consent_manager.js">
+        src="<?php echo $web_root; ?>consent_manager.js?v=<?php echo $gdpr_version; ?>">
         </script>
 
         <div id="gdpr-banner" class="gdpr-banner">
