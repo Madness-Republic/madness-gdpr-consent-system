@@ -125,7 +125,7 @@ class ConsentManager {
         date.setTime(date.getTime() + (this.cookieDuration * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
 
-        document.cookie = this.cookieName + "=" + json + expires + "; path=/; SameSite=Lax"; // Secure is implied on HTTPS
+        document.cookie = this.cookieName + "=" + json + expires + "; path=/; SameSite=Lax; Secure";
 
         this.updateGCM(preferences);
         this.activateScripts(preferences); // Activate generic scripts
