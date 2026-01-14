@@ -1,9 +1,9 @@
 <?php
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/../config.php';
 
 // Discover Languages for labels
 $available_langs = [];
-foreach (glob(__DIR__ . '/languages/*.json') as $file) {
+foreach (glob(__DIR__ . '/../languages/*.json') as $file) {
     $code = basename($file, '.json');
     $lang_data = json_decode(file_get_contents($file), true);
     $l_name = $lang_data['language_name'] ?? strtoupper($code);
@@ -20,8 +20,8 @@ foreach (glob(__DIR__ . '/languages/*.json') as $file) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <?php $v = trim(@file_get_contents(__DIR__ . '/VERSION') ?: '1.2.0'); ?>
-    <link rel="stylesheet" href="policy_style.css?v=<?php echo $v; ?>">
+    <?php $v = trim(@file_get_contents(__DIR__ . '/../VERSION') ?: '1.2.1'); ?>
+    <link rel="stylesheet" href="../assets/css/policy_style.css?v=<?php echo $v; ?>">
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -89,7 +89,7 @@ foreach (glob(__DIR__ . '/languages/*.json') as $file) {
                 // Set lang for policy engine to correctly identify content inside policy.php
                 $_GET['lang'] = $lang;
                 echo "<div class='policy-item' id='policy-$lang' style='display: none;'>";
-                include 'policy.php';
+                include '../policy.php';
                 echo "</div>";
             }
             ?>

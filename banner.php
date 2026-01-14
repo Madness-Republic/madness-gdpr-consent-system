@@ -13,7 +13,7 @@ if (!isset($gdpr_col_text))
 if (!isset($gdpr_bg_opacity))
     $gdpr_bg_opacity = 95;
 if (!isset($gdpr_version))
-    $gdpr_version = trim(@file_get_contents(__DIR__ . '/VERSION') ?: '1.2.0');
+    $gdpr_version = trim(@file_get_contents(__DIR__ . '/VERSION') ?: '1.2.1');
 
 // Text Defaults
 if (!isset($gdpr_text_title_it))
@@ -45,8 +45,11 @@ $web_root = str_replace($document_root, '', $current_dir);
 $web_root = '/' . ltrim(str_replace('\\', '/', $web_root), '/') . '/';
 // Fix double slashes
 $web_root = str_replace('//', '/', $web_root);
+
+// Define privacy URL (can be overridden in config.php)
+$gdpr_final_privacy_url = isset($gdpr_privacy_url) ? $gdpr_privacy_url : str_replace('gdpr/', '', $web_root) . 'privacy.php';
 ?>
-<link rel="stylesheet" href="<?php echo $web_root; ?>cookie_style.css?v=<?php echo $gdpr_version; ?>">
+<link rel="stylesheet" href="<?php echo $web_root; ?>assets/css/cookie_style.css?v=<?php echo $gdpr_version; ?>">
 <style>
     :root {
         --gdpr-primary:
@@ -89,6 +92,7 @@ foreach ($enabled_langs as $lang) {
         ga4_id: '<?php echo $gdpr_ga4_id; ?>',
         cookie_duration: <?php echo $gdpr_cookie_duration; ?>,
         default_lang: '<?php echo $gdpr_default_lang; ?>',
+        privacy_url: '<?php echo $gdpr_final_privacy_url; ?>',
         texts: {
             <?php
             $first = true;
@@ -108,15 +112,14 @@ foreach ($enabled_langs as $lang) {
     };
 </script>
     <script<?php echo isset($nonce) ? ' nonce="' . $nonce . '"' : ''; ?>
-        src="<?php echo $web_root; ?>consent_manager.js?v=<?php echo $gdpr_version; ?>">
+        src="<?php echo $web_root; ?>assets/js/consent_manager.js?v=<?php echo $gdpr_version; ?>">
         </script>
 
         <div id="gdpr-banner" class="gdpr-banner">
             <div class="gdpr-content">
                 <div class="gdpr-text">
                     <h3 id="gdpr-title">Privacy</h3>
-                    <p id="gdpr-text">This website uses cookies. <a
-                            href="<?php echo str_replace('gdpr/', '', $web_root); ?>privacy.php"
+                    <p id="gdpr-text">This website uses cookies. <a href="<?php echo $gdpr_final_privacy_url; ?>"
                             style="color: var(--gdpr-accent); text-decoration: underline;">Privacy Policy</a></p>
                 </div>
                 <div class="gdpr-actions">
@@ -173,7 +176,7 @@ foreach ($enabled_langs as $lang) {
                 </div>
                 <div class="gdpr-modal-footer">
                     <div style="font-size: 0.8rem;">
-                        <a href="<?php echo str_replace('gdpr/', '', $web_root); ?>privacy.php"
+                        <a href="<?php echo $gdpr_final_privacy_url; ?>"
                             style="color: var(--gdpr-secondary); text-decoration: underline;">Privacy Policy</a>
                     </div>
                     <?php if ($gdpr_enable_branding): ?>

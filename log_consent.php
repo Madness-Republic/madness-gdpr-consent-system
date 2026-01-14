@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input) {
-    http_response_code(400); 
+    http_response_code(400);
     echo json_encode(['error' => 'Invalid JSON']);
     exit;
 }

@@ -8,12 +8,12 @@ session_start();
 
 // Simple Auth
 $ADMIN_PASSWORD = 'password'; // Default password - Change this!
-$CONFIG_FILE = __DIR__ . '/config.php';
-$VERSION = trim(file_get_contents(__DIR__ . '/VERSION') ?: '1.2.1');
+$CONFIG_FILE = __DIR__ . '/../config.php';
+$VERSION = trim(file_get_contents(__DIR__ . '/../VERSION') ?: '1.2.1');
 
 // Discover Languages
 $available_langs = [];
-foreach (glob(__DIR__ . '/languages/*.json') as $file) {
+foreach (glob(__DIR__ . '/../languages/*.json') as $file) {
     $code = basename($file, '.json');
     $lang_data = json_decode(file_get_contents($file), true);
     $l_name = $lang_data['language_name'] ?? strtoupper($code);
@@ -27,7 +27,7 @@ if (!array_key_exists($ui_lang, $available_langs))
 $_SESSION['ui_lang'] = $ui_lang;
 
 // Load Admin Translations
-$lang_json = json_decode(file_get_contents(__DIR__ . "/languages/$ui_lang.json"), true);
+$lang_json = json_decode(file_get_contents(__DIR__ . "/../languages/$ui_lang.json"), true);
 $t = $lang_json['admin'];
 
 // Handle Logout
@@ -172,6 +172,7 @@ $gdpr_company_email = '';
 $gdpr_ga4_id = '';
 $gdpr_cookie_duration = 180;
 $gdpr_default_lang = 'it';
+$gdpr_privacy_url = 'privacy.php';
 // Default Colors
 $gdpr_col_primary = '#f09100';
 $gdpr_col_accept_1 = '#f09100';
@@ -204,6 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $g_id = trim($_POST['ga4_id']);
     $c_dur = (int) $_POST['cookie_duration'];
     $d_lang = trim($_POST['default_lang']);
+    $p_url = trim($_POST['privacy_url'] ?? 'privacy.php');
 
     // Enabled Languages
     $enabled_langs = isset($_POST['enabled_languages']) ? $_POST['enabled_languages'] : [$d_lang];
@@ -229,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
 
         // Save Policies (if posted)
         if (isset($_POST["policy_$lang"])) {
-            file_put_contents(__DIR__ . "/content/policy_$lang.html", $_POST["policy_$lang"]);
+            file_put_contents(__DIR__ . "/../content/policy_$lang.html", $_POST["policy_$lang"]);
         }
     }
 
@@ -249,6 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $content .= "\$gdpr_ga4_id = " . var_export($g_id, true) . "; // Google Analytics 4 Measurement ID\n";
     $content .= "\$gdpr_cookie_duration = $c_dur; // Days\n";
     $content .= "\$gdpr_default_lang = " . var_export($d_lang, true) . ";\n";
+    $content .= "\$gdpr_privacy_url = " . var_export($p_url, true) . ";\n";
     $content .= "\$gdpr_version = " . var_export($VERSION, true) . ";\n";
     $content .= "\$gdpr_enabled_languages = " . var_export($enabled_langs, true) . ";\n\n";
     $content .= "// 3. Style Settings\n";
@@ -284,6 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
         $gdpr_ga4_id = $g_id;
         $gdpr_cookie_duration = $c_dur;
         $gdpr_default_lang = $d_lang;
+        $gdpr_privacy_url = $p_url;
         $gdpr_enabled_languages = $enabled_langs;
 
         $gdpr_col_primary = $col_p;
@@ -318,7 +322,7 @@ foreach ($enabled_langs_to_load as $lang) {
     // e.g. ${"gdpr_text_title_$lang"}
 
     // Policy Content
-    $p_path = __DIR__ . "/content/policy_$lang.html";
+    $p_path = __DIR__ . "/../content/policy_$lang.html";
     if (file_exists($p_path)) {
         $policy_contents[$lang] = file_get_contents($p_path);
     } else {
@@ -599,7 +603,7 @@ foreach ($enabled_langs_to_load as $lang) {
             }
         }
     </style>
-    <link rel="stylesheet" href="cookie_style.css">
+    <link rel="stylesheet" href="../assets/css/cookie_style.css">
     <!-- Note: using relative path logic for admin usually serving from gdpr/ -->
     <script>
         function openTab(lang) {
@@ -674,12 +678,12 @@ foreach ($enabled_langs_to_load as $lang) {
             <div style="flex:1;">
                 <h1 style="margin-bottom: 5px;"><?php echo $t['title']; ?> ⚙️</h1>
                 <p style="margin: 0; font-size: 0.8rem; color: #94a3b8; font-weight: 500;">
-                    Madness GDPR v<?php echo $VERSION; ?> | Last Update: <?php echo date("d M Y", filemtime(__DIR__ . '/VERSION')); ?>
+                    Madness GDPR v<?php echo $VERSION; ?> | Last Update: <?php echo date("d M Y", filemtime(__DIR__ . '/../VERSION')); ?>
                 </p>
             </div>
             <nav class="nav-links" style="display:flex; align-items:center; gap:10px;">
-                <a href="install_guide.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem;">📖 <?php echo $t['install_guide']; ?></a>
-                <a href="technical_compliance.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px;">🛠️ <?php echo $t['tech_doc']; ?></a>
+                <a href="../docs/install_guide.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem;">📖 <?php echo $t['install_guide']; ?></a>
+                <a href="../docs/technical_compliance.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px;">🛠️ <?php echo $t['tech_doc']; ?></a>
                 <select onchange="window.location.href='?lang='+this.value" style="background:#0f172a; color:#f59e0b; border:1px solid #f59e0b; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:600; outline:none; margin-left: 10px; width: auto !important;">
                     <?php foreach($available_langs as $code => $name): ?>
                         <option value="<?php echo $code; ?>" <?php echo $ui_lang === $code ? 'selected' : ''; ?>>
@@ -750,6 +754,12 @@ foreach ($enabled_langs_to_load as $lang) {
                         <?php endforeach; ?>
                     </select>
                     <div class="help-text"><?php echo $t['lang_help']; ?></div>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo $t['privacy_url_label'] ?? 'Privacy Policy URL'; ?></label>
+                    <input type="text" name="privacy_url" value="<?php echo htmlspecialchars($gdpr_privacy_url ?? 'privacy.php'); ?>">
+                    <div class="help-text"><?php echo $t['privacy_url_help'] ?? 'Specify the path from the site root.'; ?></div>
                 </div>
 
                 <div class="form-group">
