@@ -14,6 +14,9 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 - **Admin Panel**: Full control over settings, styles, and policy content without touching code.
 - **Universal Integration**: Automatically handles paths to work from root or subdirectories (e.g., `/pixelwall/`). Supports custom Privacy Policy paths via configuration.
 
+📄 **[Read Technical & Compliance Specs](TECHNICAL_SPECS.md)**
+
+
 ## Installation
 
 1. Create a folder named `gdpr` in your website's root directory and upload all the repository files into it.
