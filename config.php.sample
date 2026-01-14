@@ -12,6 +12,7 @@ $gdpr_ga4_id = ''; // Google Analytics 4 Measurement ID (G-XXXXXXX)
 $gdpr_cookie_duration = 365; // Days
 $gdpr_default_lang = 'en';
 $gdpr_enabled_languages = ['en', 'it'];
+$gdpr_privacy_url = 'privacy.php'; // Custom path to privacy policy (optional)
 
 // 3. Style Settings
 $gdpr_col_primary = '#f09100';

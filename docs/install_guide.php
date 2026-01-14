@@ -1,18 +1,18 @@
 <?php
 session_start();
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/../config.php';
 
 // Security check
 if (!isset($_SESSION['gdpr_admin_logged_in']) || $_SESSION['gdpr_admin_logged_in'] !== true) {
-    header('Location: admin.php');
+    header('Location: ../dashboard/index.php');
     exit;
 }
 
 $ui_lang = $_GET['lang'] ?? 'it';
-$lang_file = __DIR__ . "/languages/$ui_lang.json";
+$lang_file = __DIR__ . "/../languages/$ui_lang.json";
 if (!file_exists($lang_file))
     $ui_lang = 'it';
-$t = json_decode(file_get_contents(__DIR__ . "/languages/$ui_lang.json"), true);
+$t = json_decode(file_get_contents(__DIR__ . "/../languages/$ui_lang.json"), true);
 $guide = $t['guide'];
 ?>
 <!DOCTYPE html>
@@ -134,7 +134,8 @@ $guide = $t['guide'];
 
 <body>
     <div class="container">
-        <a href="admin.php?lang=<?php echo $ui_lang; ?>" class="back-link">← <?php echo $guide['back']; ?></a>
+        <a href="../dashboard/index.php?lang=<?php echo $ui_lang; ?>" class="back-link">←
+            <?php echo $guide['back']; ?></a>
 
         <header>
             <h1><?php echo $guide['title']; ?></h1>
@@ -155,6 +156,9 @@ $guide = $t['guide'];
             <code>&lt;?php include_once 'gdpr/policy.php'; ?&gt;</code>
             <div class="note">
                 <?php echo $guide['step2_note']; ?>
+                <br><br>
+                <strong>Novità v1.2.1:</strong> Puoi configurare un URL personalizzato nell'Admin. Nelle traduzioni
+                JSON, usa il segnaposto <code>{{privacy_url}}</code> per generare link dinamici.
             </div>
         </section>
 

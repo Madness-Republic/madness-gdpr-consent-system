@@ -1,17 +1,17 @@
 <?php
 session_start();
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/../config.php';
 // Security check: only logged in admins can see this
 if (!isset($_SESSION['gdpr_admin_logged_in']) || $_SESSION['gdpr_admin_logged_in'] !== true) {
-    header('Location: admin.php');
+    header('Location: ../dashboard/index.php');
     exit;
 }
 
 $ui_lang = $_GET['lang'] ?? 'it';
-$lang_file = __DIR__ . "/languages/$ui_lang.json";
+$lang_file = __DIR__ . "/../languages/$ui_lang.json";
 if (!file_exists($lang_file))
     $ui_lang = 'it';
-$t = json_decode(file_get_contents(__DIR__ . "/languages/$ui_lang.json"), true);
+$t = json_decode(file_get_contents(__DIR__ . "/../languages/$ui_lang.json"), true);
 $tech = $t['tech'];
 ?>
 <!DOCTYPE html>
@@ -139,8 +139,8 @@ $tech = $t['tech'];
 <body>
 
     <div class="container">
-        <a href="admin.php?lang=<?php echo $ui_lang; ?>" class="back-link">←
-            <?php echo $t['guide']['back'] ?? 'Back'; ?></a>
+        <a href="../dashboard/index.php?lang=<?php echo $ui_lang; ?>" class="back-link">←
+            <?php echo $tech['back']; ?></a>
 
         <header>
             <h1>

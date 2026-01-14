@@ -7,7 +7,8 @@ class ConsentManager {
         this.config = window.MadnessGDPR || {
             ga4_id: '',
             cookie_duration: 180,
-            default_lang: 'en'
+            default_lang: 'en',
+            privacy_url: 'privacy.php'
         };
 
         this.cookieName = 'madness_gdpr_consent';
@@ -145,7 +146,7 @@ class ConsentManager {
 
     // Send Log to Server
     sendConsentLog(prefs) {
-        fetch('gdpr/log_consent.php', {
+        fetch(window.GDPR_ROOT + 'log_consent.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -283,6 +284,13 @@ class ConsentManager {
             if (custom.description && custom.description.trim() !== '') t.banner_text = custom.description;
         }
 
+        // Apply dynamic placeholders (e.g. {{privacy_url}})
+        const privacy_url = this.config.privacy_url || 'privacy.php';
+        const replacePlaceholders = (str) => {
+            if (typeof str !== 'string') return str;
+            return str.replace(/{{privacy_url}}/g, privacy_url);
+        };
+
         // Helper to set text
         const setText = (id, text, isHtml = false) => {
             const el = document.getElementById(id);
@@ -293,15 +301,15 @@ class ConsentManager {
         };
 
         // Banner Texts
-        setText('gdpr-title', t.banner_title);
-        setText('gdpr-text', t.banner_text, true);
+        setText('gdpr-title', replacePlaceholders(t.banner_title));
+        setText('gdpr-text', replacePlaceholders(t.banner_text), true);
         setText('btn-accept', t.btn_accept);
         setText('btn-reject', t.btn_reject);
         setText('btn-customize', t.btn_customize);
 
         // Modal Texts
-        setText('modal-title', t.modal_title);
-        setText('modal-intro', t.modal_intro, true); // HTML for link
+        setText('modal-title', replacePlaceholders(t.modal_title));
+        setText('modal-intro', replacePlaceholders(t.modal_intro), true); // HTML for link
         setText('cat-necessary', t.cat_necessary);
         setText('desc-necessary', t.desc_necessary);
         setText('cat-analytics', t.cat_analytics);
@@ -332,6 +340,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (custom.description) t.banner_text = custom.description;
     }
 
+    // Apply dynamic placeholders
+    const privacy_url = window.ConsentManager.config.privacy_url || 'privacy.php';
+    const replacePlaceholders = (str) => {
+        if (typeof str !== 'string') return str;
+        return str.replace(/{{privacy_url}}/g, privacy_url);
+    };
+
     // Helper to set text
     const setText = (id, text, isHtml = false) => {
         const el = document.getElementById(id);
@@ -342,15 +357,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Banner Texts
-    setText('gdpr-title', t.banner_title);
-    setText('gdpr-text', t.banner_text, true); // Allow HTML for link
+    setText('gdpr-title', replacePlaceholders(t.banner_title));
+    setText('gdpr-text', replacePlaceholders(t.banner_text), true); // Allow HTML for link
     setText('btn-accept', t.btn_accept);
     setText('btn-reject', t.btn_reject);
     setText('btn-customize', t.btn_customize); // Link or button
 
     // Modal Texts
-    setText('modal-title', t.modal_title);
-    setText('modal-intro', t.modal_intro, true); // HTML for link
+    setText('modal-title', replacePlaceholders(t.modal_title));
+    setText('modal-intro', replacePlaceholders(t.modal_intro), true); // HTML for link
     setText('cat-necessary', t.cat_necessary);
     setText('desc-necessary', t.desc_necessary);
     setText('cat-analytics', t.cat_analytics);
