@@ -728,6 +728,28 @@ foreach ($enabled_langs_to_load as $lang) {
                 </div>
             </div>
 
+            <!-- Auto Installer Card -->
+            <div class="card">
+                <h2>🤖 <?php echo $t['auto_install_title'] ?? 'Auto Installation'; ?></h2>
+                <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px;"><?php echo $t['auto_install_desc'] ?? 'Scan your site to automatically inject the banner.'; ?></p>
+
+                <div id="scan-results" style="margin-bottom: 20px;">
+                    <!-- Results will appear here -->
+                    <div style="text-align: center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 8px; color: #64748b;">
+                        Click "Scan" to find compatible files.
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                     <label style="font-size: 0.85rem; color: #94a3b8; display:block; margin-bottom:5px;"><?php echo $t['custom_path_label'] ?? 'Or enter a custom file path:'; ?></label>
+                     <input type="text" id="custom-file-input" placeholder="path/to/file.php" style="width: 100%; max-width: 400px;">
+                </div>
+
+                <button type="button" id="btn-scan" class="btn-save" style="background: #3b82f6; color: white; margin-top: 10px;">
+                    🔍 <?php echo $t['btn_scan'] ?? 'Scan Site'; ?>
+                </button>
+            </div>
+
             <div class="card">
                 <h2>⚙️ <?php echo $t['tech_settings']; ?></h2>
 
@@ -1088,6 +1110,154 @@ foreach ($enabled_langs_to_load as $lang) {
             <button type="submit" class="btn-save"><?php echo $t['btn_save']; ?></button>
         </form>
     </div>
+
+    <!-- Auto Installer Script -->
+    <script>
+        const scanBtn = document.getElementById('btn-scan');
+        const resultsContainer = document.getElementById('scan-results');
+
+        // Translations from PHP
+        const msgs = {
+            scanning: "<?php echo $t['msg_scanning'] ?? 'Scanning...'; ?>",
+            install_success: "<?php echo $t['msg_install_success'] ?? 'Success!'; ?>",
+            restore_success: "<?php echo $t['msg_restore_success'] ?? 'Success!'; ?>",
+            error: "<?php echo $t['msg_error'] ?? 'Error: '; ?>",
+            btn_install: "<?php echo $t['btn_install'] ?? 'Install'; ?>",
+            btn_restore: "<?php echo $t['btn_restore'] ?? 'Restore'; ?>",
+            installed: "<?php echo $t['status_installed'] ?? 'Installed'; ?>",
+            not_installed: "<?php echo $t['status_not_installed'] ?? 'Not Installed'; ?>",
+            not_writable: "<?php echo $t['status_not_writable'] ?? 'Not Writable'; ?>",
+            file: "<?php echo $t['file_col'] ?? 'File'; ?>",
+            status: "<?php echo $t['status_col'] ?? 'Status'; ?>",
+            action: "<?php echo $t['action_col'] ?? 'Action'; ?>"
+        };
+
+        if(scanBtn) {
+            scanBtn.addEventListener('click', async () => {
+                scanBtn.disabled = true;
+                scanBtn.textContent = msgs.scanning;
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'scan');
+                    
+                    const customFile = document.getElementById('custom-file-input').value;
+                    if(customFile) formData.append('custom_file', customFile);
+                    
+                    const res = await fetch('auto_install.php', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    
+                    if(data.files) {
+                        renderScanResults(data.files);
+                    }
+                } catch(e) {
+                    console.error(e);
+                    resultsContainer.innerHTML = '<p style="color:red">Error scanning.</p>';
+                } finally {
+                    scanBtn.disabled = false;
+                    scanBtn.textContent = '🔍 ' + "<?php echo $t['btn_scan'] ?? 'Scan Site'; ?>";
+                }
+            });
+        }
+
+        function renderScanResults(files) {
+            if(!files || files.length === 0) {
+                resultsContainer.innerHTML = '<p>No compatible files found.</p>';
+                return;
+            }
+
+            // check if any file is already installed
+            const anyInstalled = files.some(f => f.installed);
+
+            let html = `<p style="font-size:0.85rem; color:#94a3b8; margin-bottom:15px;">
+                            ℹ️ Choose <strong>only one</strong> file to install the banner (Best choice: <em>footer.php</em>).
+                        </p>`;
+
+            if (anyInstalled) {
+                 html += `<div style="background:rgba(16, 185, 129, 0.1); border:1px solid #059669; color:#34d399; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.9rem;">
+                            ✅ The banner is already installed! You don't need to do anything else.
+                          </div>`;
+            }
+
+            html += `<table style="width:100%; border-collapse: collapse; color: #cbd5e1; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #334155; text-align: left;">
+                        <th style="padding: 10px;">${msgs.file}</th>
+                        <th style="padding: 10px;">${msgs.status}</th>
+                        <th style="padding: 10px;">${msgs.action}</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            files.forEach(f => {
+                if(!f.exists) return; // Skip non-existent
+                
+                let isRecommended = f.file.includes('footer.php');
+                let fileNameDisplay = `<b>${f.file}</b>` + (isRecommended ? ' <span style="font-size:0.75rem; background:#f59e0b; color:black; padding:2px 6px; border-radius:4px; margin-left:5px;">RECOMMENDED</span>' : '');
+
+                let statusIcon = '';
+                if(!f.writable) statusIcon = `<span style="color:#ef4444">${msgs.not_writable}</span>`;
+                else if(f.installed) statusIcon = `<span style="color:#10b981">${msgs.installed}</span>`;
+                else statusIcon = `<span style="color:#f59e0b">${msgs.not_installed}</span>`;
+                
+                let btn = '';
+                if(f.writable) {
+                    if(!f.installed) {
+                        // Disable install button if ANY file is already installed (to prevent duplicates)
+                        // Unless this specific file is the one (logic handled by !f.installed)
+                        let disabledAttr = anyInstalled ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : '';
+                        let btnStyle = anyInstalled ? 'background:#475569; color:#94a3b8;' : 'background:#10b981; color:white; cursor:pointer;';
+                        
+                        btn = `<button type="button" onclick="runInstaller('install', '${f.file}')" ${disabledAttr}
+                                style="${btnStyle} border:none; padding: 5px 10px; border-radius:4px;">
+                                ${msgs.btn_install}
+                               </button>`;
+                    } else {
+                         // If backup exists, show restore
+                         if(f.backup) {
+                             btn = `<button type="button" onclick="runInstaller('restore', '${f.file}')" 
+                                style="background: #ef4444; border:none; color:white; padding: 5px 10px; border-radius:4px; cursor:pointer;">
+                                ${msgs.btn_restore}
+                               </button>`;
+                         } else {
+                             btn = '<span style="color:#64748b; font-style:italic;">No backup</span>';
+                         }
+                    }
+                }
+
+                html += `<tr style="border-bottom: 1px solid #1e293b;">
+                    <td style="padding: 10px;">${fileNameDisplay}</td>
+                    <td style="padding: 10px;">${statusIcon}</td>
+                    <td style="padding: 10px;">${btn}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            resultsContainer.innerHTML = html;
+        }
+
+        async function runInstaller(action, file) {
+            if(!confirm('Are you sure?')) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                formData.append('target_file', file);
+                
+                const res = await fetch('auto_install.php', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if(data.success) {
+                    alert(action === 'install' ? msgs.install_success : msgs.restore_success);
+                    scanBtn.click(); // Refresh
+                } else {
+                    alert(msgs.error + (data.error || 'Unknown error'));
+                }
+            } catch(e) {
+                alert(msgs.error + e);
+            }
+        }
+    </script>
 
 </body>
 

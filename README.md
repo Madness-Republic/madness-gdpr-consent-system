@@ -1,5 +1,5 @@
 # Madness GDPR Consent System
-![Version](https://img.shields.io/badge/version-1.2.1-orange.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-orange.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/Madness-Republic/madness-gdpr-consent-system)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
@@ -7,6 +7,7 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 ## Features
 - **Strict Compliance (Basic Mode)**: Blocks Google Analytics and third-party scripts totally until explicit consent is given (satisfies Cookiebot/Iubenda scanners).
 - **Proof of Consent Logging**: Server-side CSV logging of consent actions (Timestamp, Masked IP, Consent ID) for legal compliance.
+- **Auto-Installation**: One-click banner injection for non-technical users.
 - **Equal Prominence UI**: Compliant design with identical "Accept" and "Reject" buttons to avoid "dark patterns".
 - **Google Consent Mode v2**: Full support for both Basic and Advanced GCM v2 signals.
 - **Generic Script Blocking**: Easily block any 3rd party script (Pixel, LinkedIn, etc.) using `type="text/plain"`.
@@ -65,7 +66,12 @@ The system uses CSS variables. You can override them in your main CSS:
 
 ## Update Log
 
-### v1.2.1 (Current) - Transparency & Hardening
+### v1.3.0 (Current) - Auto-Installation
+- **One-Click Installer**: Added an auto-install card in the Dashboard that scans for `footer.php` or `index.php` and injects the banner code automatically.
+- **Smart Restore**: Ability to restore original files from backup if something goes wrong.
+- **Improved Dashboard**: Added scanning UI and feedback messages.
+
+### v1.2.1 - Transparency & Hardening
 - **Dynamic Privacy Linking**: Added support for `{{privacy_url}}` placeholder in translation files and a configurable privacy URL in the Admin.
 - **Prior Consent Hardening**: Ensured zero-tracking on landing pages; GCM and dataLayer are initialized only after explicit consent.
 - **Rich Text Banner**: Modified `consent_manager.js` to support HTML in banner title and description for policy links.
