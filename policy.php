@@ -1,5 +1,7 @@
 <?php
 include_once __DIR__ . '/config.php';
+$gdpr_version = trim(@file_get_contents(__DIR__ . '/VERSION') ?: '1.3.0');
+
 
 // Get Language
 $lang = isset($_GET['lang']) ? $_GET['lang'] : $gdpr_default_lang;

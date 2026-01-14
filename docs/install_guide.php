@@ -14,6 +14,8 @@ if (!file_exists($lang_file))
     $ui_lang = 'it';
 $t = json_decode(file_get_contents(__DIR__ . "/../languages/$ui_lang.json"), true);
 $guide = $t['guide'];
+if (!isset($gdpr_version))
+    $gdpr_version = trim(@file_get_contents(__DIR__ . '/../VERSION') ?: '1.3.0');
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $ui_lang; ?>">
@@ -196,7 +198,7 @@ $guide = $t['guide'];
         </section>
 
         <footer>
-            <?php echo $gdpr_brand_name; ?> - Installation Manual
+            Madness GDPR Consent System v<?php echo $gdpr_version; ?> - <?php echo $guide['manual_subtitle']; ?>
         </footer>
     </div>
 </body>

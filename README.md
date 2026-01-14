@@ -1,5 +1,5 @@
 # Madness GDPR Consent System
-![Version](https://img.shields.io/badge/version-1.3.0-orange.svg)
+![Version](https://img.shields.io/badge/version-1.3.1-orange.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/Madness-Republic/madness-gdpr-consent-system)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
@@ -65,6 +65,13 @@ The system uses CSS variables. You can override them in your main CSS:
 ```
 
 ## Update Log
+
+### v1.3.1 - Refinement & Community
+- **Donation Block**: Added a support/donation block in the Dashboard to allow users to support the project.
+- **Dynamic Documentation**: `install_guide.php` and `technical_compliance.php` now dynamically display the current version number and localized subtitles.
+- **Improved Installation Guide**: Clarified steps in the installation guide and localized missing Spanish translations (blocking scripts, log permissions).
+- **Branding Freedom**: Generalized the license visibility notice and refactored branding logic to be internal, removing user-config dependencies.
+- **UI Tweaks**: Improved dashboard layout and fixed relative links.
 
 ### v1.3.0 (Current) - Auto-Installation
 - **One-Click Installer**: Added an auto-install card in the Dashboard that scans for `footer.php` or `index.php` and injects the banner code automatically.

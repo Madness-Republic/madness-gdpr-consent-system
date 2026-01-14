@@ -235,9 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
         }
     }
 
-    // Fixed Branding
-    $brand_enable = 'true';
-    $brand_text = "Madness GDPR Consent System v" . $VERSION;
+
 
     // Generate Content for Config
     $content = "<?php\n";
@@ -252,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $content .= "\$gdpr_cookie_duration = $c_dur; // Days\n";
     $content .= "\$gdpr_default_lang = " . var_export($d_lang, true) . ";\n";
     $content .= "\$gdpr_privacy_url = " . var_export($p_url, true) . ";\n";
-    $content .= "\$gdpr_version = " . var_export($VERSION, true) . ";\n";
+
     $content .= "\$gdpr_enabled_languages = " . var_export($enabled_langs, true) . ";\n\n";
     $content .= "// 3. Style Settings\n";
     $content .= "\$gdpr_col_primary = " . var_export($col_p, true) . ";\n";
@@ -269,10 +267,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
         $content .= "\$gdpr_text_desc_$lang = " . var_export($txt['desc'], true) . ";\n";
     }
 
-    $content .= "\n// 5. Branding (MANDATORY per License)\n";
-    $content .= "// Modifying these lines to hide branding is a violation of the license.\n";
-    $content .= "\$gdpr_enable_branding = " . $brand_enable . ";\n";
-    $content .= "\$gdpr_brand_name = " . var_export($brand_text, true) . ";\n";
     $content .= "?>";
 
     // Write Config File
@@ -1100,7 +1094,8 @@ foreach ($enabled_langs_to_load as $lang) {
                 <div class="branding-notice">
                     <?php echo $t['branding_notice']; ?>
                     <br><br>
-                    <a href="LICENSE" target="_blank" style="color: #f59e0b; font-weight: 600; text-decoration: underline;">📄 <?php echo $t['view_license']; ?></a>
+                    <a href="../LICENSE" target="_blank" style="color: #f59e0b; font-weight: 600; text-decoration: underline;">📄 <?php echo $t['view_license']; ?></a>
+
                     <p style="margin-top: 20px; font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #334155; padding-top: 10px;">
                         <?php echo $gdpr_brand_name; ?>
                     </p>
@@ -1108,6 +1103,22 @@ foreach ($enabled_langs_to_load as $lang) {
             </div>
 
             <button type="submit" class="btn-save"><?php echo $t['btn_save']; ?></button>
+
+            <!-- Support / Donation Card -->
+            <div class="card" style="border: 1px solid var(--accent); background: rgba(240, 145, 0, 0.05); margin-top: 40px;">
+                <h2>❤️ <?php echo $t['support_title'] ?? 'Support Us'; ?></h2>
+                <p style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 25px;">
+                    <?php echo $t['support_text'] ?? 'Our GDPR system is free and open source...'; ?>
+                </p>
+                
+                <div id="donation-container" style="display: flex; justify-content: center; min-height: 50px;">
+                     <button type="button" id="load-donation-btn" 
+                        style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 8px; transition: transform 0.2s;">
+                        <?php echo $t['btn_donate'] ?? 'Donate'; ?>
+                     </button>
+                </div>
+            </div>
+
         </form>
     </div>
 
@@ -1259,6 +1270,40 @@ foreach ($enabled_langs_to_load as $lang) {
         }
     </script>
 
+    <script>
+        document.getElementById('load-donation-btn')?.addEventListener('click', function () {
+            const btn = this;
+            const container = document.getElementById('donation-container');
+
+            // Visual feedback
+            btn.innerHTML = '<span>...</span>';
+            btn.style.opacity = '0.7';
+            btn.disabled = true;
+
+            if (!window._stripeBuyBtnScript) {
+                const script = document.createElement('script');
+                script.src = 'https://js.stripe.com/v3/buy-button.js';
+                script.async = true;
+                script.onload = () => {
+                    window._stripeBuyBtnScript = true;
+                    showStripeComponent();
+                };
+                document.head.appendChild(script);
+            } else {
+                showStripeComponent();
+            }
+
+            function showStripeComponent() {
+                container.innerHTML = `
+                    <stripe-buy-button
+                        buy-button-id="buy_btn_1SpPILF9KWl6PM6DlsdKpz2m"
+                        publishable-key="pk_live_51Ndc8HF9KWl6PM6DrbhJhBjTIbTUF4Q0jgF3Ok9sqepIdeYb4cfz6FX6J1jBYHgAO6vPSHBUBFkMArzlGexHvla100rrpU7GkX"
+                    >
+                    </stripe-buy-button>
+            `;
+            }
+        });
+    </script>
 </body>
 
 </html>

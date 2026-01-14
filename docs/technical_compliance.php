@@ -13,6 +13,8 @@ if (!file_exists($lang_file))
     $ui_lang = 'it';
 $t = json_decode(file_get_contents(__DIR__ . "/../languages/$ui_lang.json"), true);
 $tech = $t['tech'];
+if (!isset($gdpr_version))
+    $gdpr_version = trim(@file_get_contents(__DIR__ . '/../VERSION') ?: '1.3.0');
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $ui_lang; ?>">
@@ -227,7 +229,8 @@ $tech = $t['tech'];
         </section>
 
         <footer>
-            <?php echo $gdpr_brand_name; ?> - Technical Specs
+            Madness GDPR Consent System v<?php echo $gdpr_version; ?> -
+            <?php echo $tech['tech_subtitle'] ?? 'Technical Specs'; ?>
         </footer>
     </div>
 
