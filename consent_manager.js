@@ -249,8 +249,8 @@ class ConsentManager {
     }
 
     detectLanguage() {
-        // 1. Check local override
-        const stored = localStorage.getItem('gdpr_lang');
+        // 1. Check local override (site-wide key or gdpr specific)
+        const stored = localStorage.getItem('mr_lang') || localStorage.getItem('gdpr_lang');
         if (stored) return stored;
 
         // 2. Prepare available languages
