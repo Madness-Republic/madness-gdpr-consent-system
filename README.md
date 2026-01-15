@@ -38,7 +38,23 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
        ```php
        <?php include_once 'gdpr/banner.php'; ?>
        ```
+   ```
 6. **Run System Check**: Login to the dashboard, go to the top bar, and click **🔍 System Check**. Fix any reported errors (red marks) to ensure logs are protected and writable.
+
+### WordPress Integration
+The module works perfectly with WordPress. Since it is not a plugin, you need to install it manually:
+
+1.  Upload the `gdpr` folder to your site root (where `wp-config.php` is located).
+2.  Edit your theme's `footer.php` file (preferably in a Child Theme).
+3.  Add this code before the closing `</body>` tag:
+    ```php
+    <?php
+    if (file_exists(ABSPATH . 'gdpr/banner.php')) {
+        include_once ABSPATH . 'gdpr/banner.php';
+    }
+    ?>
+    ```
+4.  **Note**: Do NOT use the Auto-Installer on WordPress, as theme updates might overwrite the changes. Always edit the Child Theme.
 
 ## Usage
 
