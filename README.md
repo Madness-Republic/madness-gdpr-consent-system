@@ -59,6 +59,12 @@ The admin panel (`gdpr/dashboard/index.php`) allows you to:
 - Customize **Banner Texts** for each language.
 - Edit **Privacy & Cookie Policy** templates.
 - Adjust **Styles & Colors** with live preview and **Equal Prominence** enforcement.
+   
+### How to Add a New Language
+1.  Navigate to `gdpr/languages/` and duplicate an existing JSON file (e.g., `en.json`).
+2.  Rename the new file with the desired language code (e.g., `fr.json`).
+3.  Edit the file and translate the content.
+4.  The system will automatically detect the new language. Go to the **Admin Dashboard** and select it in the "Enabled Languages" section.
 
 ### Proof of Consent
 Consent logs are stored daily in `gdpr/logs/` as CSV files. These logs are protected by an `.htaccess` file and contain anonymized data to prove compliance during audits.
