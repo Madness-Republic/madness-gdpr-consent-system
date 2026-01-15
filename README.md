@@ -32,10 +32,12 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 3. Access the Admin Panel at yourdomain.com/gdpr/dashboard/index.php (Default password: `password`).
     *   *Security Note: Change the password immediately in settings.*
 4. Configure your settings (Company info, GA4 ID, Enabled Languages).
-5. Include the banner in your main layout file (e.g., `footer.php` or `index.php` before `</body>`):
-   ```php
-   <?php include_once 'gdpr/banner.php'; ?>
-   ```
+5. **Integrate the Banner**:
+   *   **Option A (Automatic)**: In the Admin Dashboard, look for the "Auto Installation" card. Click **Scan Site**, choose the file where you want to inject the banner (usually `footer.php`), and click **Install**.
+   *   **Option B (Manual)**: Manually include the banner in your main layout file (e.g., `footer.php` or `index.php`) right before the closing `</body>` tag:
+       ```php
+       <?php include_once 'gdpr/banner.php'; ?>
+       ```
 6. **Run System Check**: Login to the dashboard, go to the top bar, and click **🔍 System Check**. Fix any reported errors (red marks) to ensure logs are protected and writable.
 
 ## Usage
