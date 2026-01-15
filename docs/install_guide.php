@@ -2,11 +2,11 @@
 session_start();
 include_once __DIR__ . '/../config.php';
 
-// Security check
-if (!isset($_SESSION['gdpr_admin_logged_in']) || $_SESSION['gdpr_admin_logged_in'] !== true) {
-    header('Location: ../dashboard/index.php');
-    exit;
-}
+// Security check - Disabled to allow access from login screen for help
+// if (!isset($_SESSION['gdpr_admin_logged_in']) || $_SESSION['gdpr_admin_logged_in'] !== true) {
+//     header('Location: ../dashboard/index.php');
+//     exit;
+// }
 
 $ui_lang = $_GET['lang'] ?? 'it';
 $lang_file = __DIR__ . "/../languages/$ui_lang.json";
@@ -141,6 +141,16 @@ if (!isset($gdpr_version))
 
         <header>
             <h1><?php echo $guide['title']; ?></h1>
+            <div class="note"
+                style="border-color: #ef4444; background: rgba(239, 68, 68, 0.1); text-align: left; margin-top: 30px;">
+                <strong><?php echo $guide['legal_disclaimer_title']; ?></strong>
+                <?php echo $guide['legal_disclaimer_text']; ?>
+            </div>
+            <div class="note"
+                style="border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); text-align: left; margin-top: 15px;">
+                <strong><?php echo $guide['pass_recovery_title']; ?></strong>
+                <?php echo $guide['pass_recovery_text']; ?>
+            </div>
         </header>
 
         <section class="card">
@@ -159,8 +169,8 @@ if (!isset($gdpr_version))
             <div class="note">
                 <?php echo $guide['step2_note']; ?>
                 <br><br>
-                <strong>Novità v1.2.1:</strong> Puoi configurare un URL personalizzato nell'Admin. Nelle traduzioni
-                JSON, usa il segnaposto <code>{{privacy_url}}</code> per generare link dinamici.
+                <strong><?php echo $guide['step2_new_title']; ?></strong>
+                <?php echo $guide['step2_new_text']; ?>
             </div>
         </section>
 
@@ -194,6 +204,15 @@ if (!isset($gdpr_version))
             <div class="note" style="border-color: #10b981; background: rgba(16, 185, 129, 0.1);">
                 Directory: <code>gdpr/logs/</code> <br>
                 Chmod: <code>755</code> (o <code>775</code>)
+            </div>
+        </section>
+
+        <!-- New Step 7: System Check -->
+        <section class="card">
+            <h2><span class="step-number">7</span> <?php echo $guide['step7_title']; ?></h2>
+            <p><?php echo $guide['step7_desc']; ?></p>
+            <div class="note" style="border-color: #3b82f6; background: rgba(59, 130, 246, 0.1);">
+                <?php echo $guide['step7_note']; ?>
             </div>
         </section>
 

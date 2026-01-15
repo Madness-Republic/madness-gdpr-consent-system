@@ -7,9 +7,16 @@ session_start();
  */
 
 // Simple Auth
-$ADMIN_PASSWORD = 'password'; // Default password - Change this!
+// Default (will be overwritten by config.php if exists)
+$gdpr_admin_pass = '$2y$12$u5FOA86ZNH2w2bPeMrgrK.VyYQ9Wr2Ba/3s4pdx89Yamo/lrcqEmm'; // Hash for 'password'
 $CONFIG_FILE = __DIR__ . '/../config.php';
-$VERSION = trim(file_get_contents(__DIR__ . '/../VERSION') ?: '1.2.1');
+$VERSION = trim(file_get_contents(__DIR__ . '/../VERSION') ?: '1.3.2');
+$gdpr_brand_name = 'Madness GDPR Consent System v' . $VERSION;
+
+// Load current config if exists (CRITICAL: Load before password check)
+if (file_exists($CONFIG_FILE)) {
+    include $CONFIG_FILE;
+}
 
 // Discover Languages
 $available_langs = [];
@@ -40,7 +47,7 @@ if (isset($_GET['logout'])) {
 // Handle Login
 $login_error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_password'])) {
-    if ($_POST['login_password'] === $ADMIN_PASSWORD) {
+    if (password_verify($_POST['login_password'], $gdpr_admin_pass)) {
         $_SESSION['gdpr_admin_logged_in'] = true;
         header("Location: " . $_SERVER['PHP_SELF'] . "?lang=$ui_lang");
         exit;
@@ -141,12 +148,20 @@ if (!isset($_SESSION['gdpr_admin_logged_in']) || $_SESSION['gdpr_admin_logged_in
     <body>
         <div class="login-card">
             <h1><?php echo $t['title']; ?></h1>
+            <p style="color: #64748b; font-size: 0.85rem; margin-top: -10px; margin-bottom: 20px;">
+                Madness GDPR Consent System v<?php echo $VERSION; ?>
+            </p>
             <?php if ($login_error): ?>
                 <div class="error"><?php echo $login_error; ?></div><?php endif; ?>
             <form method="POST">
                 <input type="password" name="login_password" placeholder="<?php echo $t['password']; ?>" required autofocus>
                 <button type="submit"><?php echo $t['login']; ?></button>
             </form>
+            <div style="margin-top: 15px; font-size: 0.85rem;">
+                <a href="../docs/install_guide.php?lang=<?php echo $ui_lang; ?>" style="color: #64748b; text-decoration: none; border-bottom: 1px dashed #64748b;">
+                    ❓ <?php echo $t['install_recovery_link']; ?>
+                </a>
+            </div>
         </div>
         <div class="lang-switch">
             <select onchange="window.location.href='?lang='+this.value" style="background:#0f172a; color:#94a3b8; border:1px solid #334155; padding:5px 10px; border-radius:6px; cursor:pointer;">
@@ -164,27 +179,28 @@ if (!isset($_SESSION['gdpr_admin_logged_in']) || $_SESSION['gdpr_admin_logged_in
     exit;
 }
 
-// Load current config
-$gdpr_company_name = '';
-$gdpr_company_address = '';
-$gdpr_company_vat = '';
-$gdpr_company_email = '';
-$gdpr_ga4_id = '';
-$gdpr_cookie_duration = 180;
-$gdpr_default_lang = 'it';
-$gdpr_privacy_url = 'privacy.php';
+// Initialize defaults only if not loaded from config.php
+if (!isset($gdpr_company_name)) $gdpr_company_name = '';
+if (!isset($gdpr_company_address)) $gdpr_company_address = '';
+if (!isset($gdpr_company_vat)) $gdpr_company_vat = '';
+if (!isset($gdpr_company_email)) $gdpr_company_email = '';
+if (!isset($gdpr_ga4_id)) $gdpr_ga4_id = '';
+if (!isset($gdpr_cookie_duration)) $gdpr_cookie_duration = 180;
+if (!isset($gdpr_default_lang)) $gdpr_default_lang = 'it';
+if (!isset($gdpr_privacy_url)) $gdpr_privacy_url = 'privacy.php';
+
 // Default Colors
-$gdpr_col_primary = '#f09100';
-$gdpr_col_accept_1 = '#f09100';
-$gdpr_col_accept_2 = '#ff4d4d';
-$gdpr_col_secondary = '#cccccc';
-$gdpr_col_bg = '#1e1e1e';
-$gdpr_col_text = '#ffffff';
-$gdpr_bg_opacity = 95; // Default 95%
+if (!isset($gdpr_col_primary)) $gdpr_col_primary = '#f09100';
+if (!isset($gdpr_col_accept_1)) $gdpr_col_accept_1 = '#f09100';
+if (!isset($gdpr_col_accept_2)) $gdpr_col_accept_2 = '#ff4d4d';
+if (!isset($gdpr_col_secondary)) $gdpr_col_secondary = '#cccccc';
+if (!isset($gdpr_col_bg)) $gdpr_col_bg = '#1e1e1e';
+if (!isset($gdpr_col_text)) $gdpr_col_text = '#ffffff';
+if (!isset($gdpr_bg_opacity)) $gdpr_bg_opacity = 95; // Default 95%
 // Default Texts (we will load them dynamically later, but we need defaults if not set)
 // No static defaults needed here as we will loop available langs
 if (file_exists($CONFIG_FILE)) {
-    include $CONFIG_FILE;
+    // include $CONFIG_FILE; // Already included at top
     if (!isset($gdpr_bg_opacity))
         $gdpr_bg_opacity = 95;
     if (!isset($gdpr_enabled_languages))
@@ -192,6 +208,9 @@ if (file_exists($CONFIG_FILE)) {
 } else {
     $gdpr_enabled_languages = ['it', 'en'];
 }
+
+// Detect Default Password
+$is_default_pass = password_verify('password', $gdpr_admin_pass);
 
 // Handle Save
 $success_msg = '';
@@ -207,6 +226,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $d_lang = trim($_POST['default_lang']);
     $p_url = trim($_POST['privacy_url'] ?? 'privacy.php');
 
+    // Handle Password Change
+    $new_pass_hash = $gdpr_admin_pass;
+    if (!empty($_POST['new_password'])) {
+        $new_pass_hash = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+    }
     // Enabled Languages
     $enabled_langs = isset($_POST['enabled_languages']) ? $_POST['enabled_languages'] : [$d_lang];
     // Ensure default lang is always enabled
@@ -238,42 +262,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
 
 
     // Generate Content for Config
-    $content = "<?php\n";
-    $content .= "// Madness GDPR Consent System - Configuration File\n\n";
-    $content .= "// 1. Company Information (For Policy Pages)\n";
-    $content .= "\$gdpr_company_name = " . var_export($c_name, true) . ";\n";
-    $content .= "\$gdpr_company_address = " . var_export($c_addr, true) . ";\n";
-    $content .= "\$gdpr_company_vat = " . var_export($c_vat, true) . ";\n";
-    $content .= "\$gdpr_company_email = " . var_export($c_email, true) . ";\n\n";
-    $content .= "// 2. Technical Settings\n";
-    $content .= "\$gdpr_ga4_id = " . var_export($g_id, true) . "; // Google Analytics 4 Measurement ID\n";
-    $content .= "\$gdpr_cookie_duration = $c_dur; // Days\n";
-    $content .= "\$gdpr_default_lang = " . var_export($d_lang, true) . ";\n";
-    $content .= "\$gdpr_privacy_url = " . var_export($p_url, true) . ";\n";
+    $config_content = "<?php\n// Madness GDPR Consent System - Configuration File\n\n";
+    $config_content .= "\$gdpr_admin_pass = '" . str_replace("'", "\\'", $new_pass_hash) . "';\n\n";
+    $config_content .= "// 1. Company Information (For Policy Pages)\n";
+    $config_content .= "\$gdpr_company_name = '" . str_replace("'", "\\'", $c_name) . "';\n";
+    $config_content .= "\$gdpr_company_address = " . var_export($c_addr, true) . ";\n";
+    $config_content .= "\$gdpr_company_vat = " . var_export($c_vat, true) . ";\n";
+    $config_content .= "\$gdpr_company_email = " . var_export($c_email, true) . ";\n\n";
+    $config_content .= "// 2. Technical Settings\n";
+    $config_content .= "\$gdpr_ga4_id = " . var_export($g_id, true) . "; // Google Analytics 4 Measurement ID\n";
+    $config_content .= "\$gdpr_cookie_duration = $c_dur; // Days\n";
+    $config_content .= "\$gdpr_default_lang = " . var_export($d_lang, true) . ";\n";
+    $config_content .= "\$gdpr_privacy_url = " . var_export($p_url, true) . ";\n";
 
-    $content .= "\$gdpr_enabled_languages = " . var_export($enabled_langs, true) . ";\n\n";
-    $content .= "// 3. Style Settings\n";
-    $content .= "\$gdpr_col_primary = " . var_export($col_p, true) . ";\n";
-    $content .= "\$gdpr_col_accept_1 = " . var_export($col_a1, true) . ";\n";
-    $content .= "\$gdpr_col_accept_2 = " . var_export($col_a2, true) . ";\n";
-    $content .= "\$gdpr_col_secondary = " . var_export($col_s, true) . ";\n";
-    $content .= "\$gdpr_col_bg = " . var_export($col_b, true) . ";\n";
-    $content .= "\$gdpr_col_text = " . var_export($col_t, true) . ";\n";
-    $content .= "\$gdpr_bg_opacity = $bg_op;\n\n";
-    $content .= "// 4. Text Settings\n";
+    $config_content .= "\$gdpr_enabled_languages = " . var_export($enabled_langs, true) . ";\n\n";
+    $config_content .= "// 3. Style Settings\n";
+    $config_content .= "\$gdpr_col_primary = " . var_export($col_p, true) . ";\n";
+    $config_content .= "\$gdpr_col_accept_1 = " . var_export($col_a1, true) . ";\n";
+    $config_content .= "\$gdpr_col_accept_2 = " . var_export($col_a2, true) . ";\n";
+    $config_content .= "\$gdpr_col_secondary = " . var_export($col_s, true) . ";\n";
+    $config_content .= "\$gdpr_col_bg = " . var_export($col_b, true) . ";\n";
+    $config_content .= "\$gdpr_col_text = " . var_export($col_t, true) . ";\n";
+    $config_content .= "\$gdpr_bg_opacity = $bg_op;\n\n";
+    $config_content .= "// 4. Text Settings\n";
 
     foreach ($dynamic_texts as $lang => $txt) {
-        $content .= "\$gdpr_text_title_$lang = " . var_export($txt['title'], true) . ";\n";
-        $content .= "\$gdpr_text_desc_$lang = " . var_export($txt['desc'], true) . ";\n";
+        $config_content .= "\$gdpr_text_title_$lang = " . var_export($txt['title'], true) . ";\n";
+        $config_content .= "\$gdpr_text_desc_$lang = " . var_export($txt['desc'], true) . ";\n";
     }
 
-    $content .= "?>";
+    $config_content .= "?>";
 
     // Write Config File
-    if (file_put_contents($CONFIG_FILE, $content)) {
+    if (file_put_contents($CONFIG_FILE, $config_content)) {
         $success_msg = $t['save_success'];
 
         // Force update variables in memory
+        $gdpr_admin_pass = $new_pass_hash; // Update password in memory
         $gdpr_company_name = $c_name;
         $gdpr_company_address = $c_addr;
         $gdpr_company_vat = $c_vat;
@@ -677,6 +702,7 @@ foreach ($enabled_langs_to_load as $lang) {
             </div>
             <nav class="nav-links" style="display:flex; align-items:center; gap:10px;">
                 <a href="../docs/install_guide.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem;">📖 <?php echo $t['install_guide']; ?></a>
+                <a href="check_system.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px;">🔍 <?php echo $t['system_check']; ?></a>
                 <a href="../docs/technical_compliance.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px;">🛠️ <?php echo $t['tech_doc']; ?></a>
                 <select onchange="window.location.href='?lang='+this.value" style="background:#0f172a; color:#f59e0b; border:1px solid #f59e0b; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:600; outline:none; margin-left: 10px; width: auto !important;">
                     <?php foreach($available_langs as $code => $name): ?>
@@ -743,7 +769,15 @@ foreach ($enabled_langs_to_load as $lang) {
                     🔍 <?php echo $t['btn_scan'] ?? 'Scan Site'; ?>
                 </button>
             </div>
-
+            <!-- Security Card -->
+            <div class="card">
+                <h2>🔐 <?php echo $t['security_title']; ?></h2>
+                <div class="form-group">
+                    <label><?php echo $t['change_pass']; ?></label>
+                    <input type="password" name="new_password" placeholder="<?php echo $t['change_pass_placeholder']; ?>" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 6px;">
+                    <div class="help-text"><?php echo $t['pass_help']; ?></div>
+                </div>
+            </div>
             <div class="card">
                 <h2>⚙️ <?php echo $t['tech_settings']; ?></h2>
 
@@ -1104,17 +1138,24 @@ foreach ($enabled_langs_to_load as $lang) {
 
             <button type="submit" class="btn-save"><?php echo $t['btn_save']; ?></button>
 
+            <?php if ($is_default_pass): ?>
+            <div class="card" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.1);">
+                <h2 style="color: #ef4444; border-bottom-color: rgba(239, 68, 68, 0.2);"><?php echo $t['security_warning_title']; ?></h2>
+                <p style="color: #f87171; font-weight: bold;"><?php echo $t['security_warning_text']; ?></p>
+                <p style="font-size: 0.9rem; color: #fca5a5;"><?php echo $t['security_warning_desc']; ?></p>
+            </div>
+        <?php endif; ?>
             <!-- Support / Donation Card -->
             <div class="card" style="border: 1px solid var(--accent); background: rgba(240, 145, 0, 0.05); margin-top: 40px;">
-                <h2>❤️ <?php echo $t['support_title'] ?? 'Support Us'; ?></h2>
+                <h2>❤️ <?php echo $t['support_title']; ?></h2>
                 <p style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 25px;">
-                    <?php echo $t['support_text'] ?? 'Our GDPR system is free and open source...'; ?>
+                    <?php echo $t['support_text']; ?>
                 </p>
                 
                 <div id="donation-container" style="display: flex; justify-content: center; min-height: 50px;">
                      <button type="button" id="load-donation-btn" 
                         style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 8px; transition: transform 0.2s;">
-                        <?php echo $t['btn_donate'] ?? 'Donate'; ?>
+                        <?php echo $t['btn_donate']; ?>
                      </button>
                 </div>
             </div>
@@ -1129,18 +1170,18 @@ foreach ($enabled_langs_to_load as $lang) {
 
         // Translations from PHP
         const msgs = {
-            scanning: "<?php echo $t['msg_scanning'] ?? 'Scanning...'; ?>",
-            install_success: "<?php echo $t['msg_install_success'] ?? 'Success!'; ?>",
-            restore_success: "<?php echo $t['msg_restore_success'] ?? 'Success!'; ?>",
-            error: "<?php echo $t['msg_error'] ?? 'Error: '; ?>",
-            btn_install: "<?php echo $t['btn_install'] ?? 'Install'; ?>",
-            btn_restore: "<?php echo $t['btn_restore'] ?? 'Restore'; ?>",
-            installed: "<?php echo $t['status_installed'] ?? 'Installed'; ?>",
-            not_installed: "<?php echo $t['status_not_installed'] ?? 'Not Installed'; ?>",
-            not_writable: "<?php echo $t['status_not_writable'] ?? 'Not Writable'; ?>",
-            file: "<?php echo $t['file_col'] ?? 'File'; ?>",
-            status: "<?php echo $t['status_col'] ?? 'Status'; ?>",
-            action: "<?php echo $t['action_col'] ?? 'Action'; ?>"
+            scanning: "<?php echo $t['msg_scanning']; ?>",
+            install_success: "<?php echo $t['msg_install_success']; ?>",
+            restore_success: "<?php echo $t['msg_restore_success']; ?>",
+            error: "<?php echo $t['msg_error']; ?>",
+            btn_install: "<?php echo $t['btn_install']; ?>",
+            btn_restore: "<?php echo $t['btn_restore']; ?>",
+            installed: "<?php echo $t['status_installed']; ?>",
+            not_installed: "<?php echo $t['status_not_installed']; ?>",
+            not_writable: "<?php echo $t['status_not_writable']; ?>",
+            file: "<?php echo $t['file_col']; ?>",
+            status: "<?php echo $t['status_col']; ?>",
+            action: "<?php echo $t['action_col']; ?>"
         };
 
         if(scanBtn) {
@@ -1166,7 +1207,7 @@ foreach ($enabled_langs_to_load as $lang) {
                     resultsContainer.innerHTML = '<p style="color:red">Error scanning.</p>';
                 } finally {
                     scanBtn.disabled = false;
-                    scanBtn.textContent = '🔍 ' + "<?php echo $t['btn_scan'] ?? 'Scan Site'; ?>";
+                    scanBtn.textContent = '🔍 ' + "<?php echo $t['btn_scan']; ?>";
                 }
             });
         }

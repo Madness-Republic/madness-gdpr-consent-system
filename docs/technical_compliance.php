@@ -148,6 +148,11 @@ if (!isset($gdpr_version))
             <h1>
                 <?php echo $tech['title']; ?>
             </h1>
+            <div class="note"
+                style="border-color: #ef4444; background: rgba(239, 68, 68, 0.1); text-align: left; margin-top: 30px;">
+                <strong><?php echo $guide['legal_disclaimer_title']; ?></strong>
+                <?php echo $tech['legal_disclaimer_tech'] ?? 'This document and module are for technical reference only. Compliance must be verified by a legal professional.'; ?>
+            </div>
             <p style="color: var(--text-dim);">
                 <?php echo $tech['intro']; ?>
             </p>
@@ -226,6 +231,20 @@ if (!isset($gdpr_version))
             <p>
                 <?php echo $tech['generic_desc'] ?? ''; ?>
             </p>
+        </section>
+
+        <!-- Section 6: Security & Licensing -->
+        <section class="card">
+            <h2><?php echo $tech['security_licensing_title']; ?></h2>
+            <h3><?php echo $tech['licensing_subtitle']; ?></h3>
+            <p><?php echo $tech['licensing_text']; ?></p>
+
+            <h3><?php echo $tech['security_subtitle']; ?></h3>
+            <ul>
+                <li><?php echo $tech['security_li1']; ?></li>
+                <li><?php echo $tech['security_li2']; ?></li>
+                <li><?php echo $tech['security_li3']; ?></li>
+            </ul>
         </section>
 
         <footer>

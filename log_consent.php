@@ -61,8 +61,13 @@ $log_entry = [
 $log_dir = __DIR__ . '/logs';
 if (!is_dir($log_dir)) {
     mkdir($log_dir, 0755, true);
-    // Add .htaccess to protect logs
-    file_put_contents($log_dir . '/.htaccess', "Order Deny,Allow\nDeny from all");
+}
+
+// Ensure .htaccess protection (Modern & Old syntax)
+$htaccess_path = $log_dir . '/.htaccess';
+if (!file_exists($htaccess_path)) {
+    $htaccess_content = "<IfModule mod_authz_core.c>\n    Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n    Order Deny,Allow\n    Deny from all\n</IfModule>";
+    file_put_contents($htaccess_path, $htaccess_content);
 }
 
 $log_file = $log_dir . '/consent_' . date('Y-m-d') . '.csv';

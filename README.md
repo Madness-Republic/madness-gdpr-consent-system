@@ -1,8 +1,10 @@
 # Madness GDPR Consent System
-![Version](https://img.shields.io/badge/version-1.3.1-orange.svg)
-![Last Commit](https://img.shields.io/github/last-commit/Madness-Republic/madness-gdpr-consent-system)
+![Version](https://img.shields.io/badge/version-1.3.2-orange.svg)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
+
+> [!IMPORTANT]
+> **LEGAL DISCLAIMER**: Use of this module does not automatically guarantee GDPR compliance. Compliance depends on the entire site configuration, privacy policy, and data handling practices. The author assumes NO responsibility for fines, damages, or disputes arising from the use of this software. Always consult with a legal expert.
 
 ## Features
 - **Strict Compliance (Basic Mode)**: Blocks Google Analytics and third-party scripts totally until explicit consent is given (satisfies Cookiebot/Iubenda scanners).
@@ -13,6 +15,9 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 - **Generic Script Blocking**: Easily block any 3rd party script (Pixel, LinkedIn, etc.) using `type="text/plain"`.
 - **Dynamic Language Support**: Multi-language support out of the box (IT, EN, ES, etc.).
 - **Admin Panel**: Full control over settings, styles, and policy content without touching code.
+- **System Self-Test**: Built-in tool to verify server environment, folder permissions, and security settings with one-click "Auto-Fix" for missing protections.
+- **Security Hardening**: Admin passwords are encrypted using Bcrypt (password_hash), and security warnings alert admins if they are using default credentials.
+- **Apache License 2.0**: Open-source license that provides stronger legal protection and explicit indemnity for the author.
 - **Universal Integration**: Automatically handles paths to work from root or subdirectories (e.g., `/pixelwall/`). Supports custom Privacy Policy paths via configuration.
 
 📄 **[Read Technical & Compliance Specs](TECHNICAL_SPECS.md)**
@@ -30,6 +35,7 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
    ```php
    <?php include_once 'gdpr/banner.php'; ?>
    ```
+6. **Run System Check**: Login to the dashboard, go to the top bar, and click **🔍 System Check**. Fix any reported errors (red marks) to ensure logs are protected and writable.
 
 ## Usage
 
@@ -54,6 +60,10 @@ The admin panel (`gdpr/dashboard/index.php`) allows you to:
 ### Proof of Consent
 Consent logs are stored daily in `gdpr/logs/` as CSV files. These logs are protected by an `.htaccess` file and contain anonymized data to prove compliance during audits.
 
+### Policy Templates Warning
+> [!WARNING]
+> The HTML templates provided in the `gdpr/content/` folder (Privacy & Cookie Policy) are **generic examples** only. You **must** review, edit, and validate them with your legal counsel to ensure they accurately reflect your specific data treatments and local regulations.
+
 ## CSS Customization
 The system uses CSS variables. You can override them in your main CSS:
 ```css
@@ -66,17 +76,21 @@ The system uses CSS variables. You can override them in your main CSS:
 
 ## Update Log
 
-### v1.3.1 - Refinement & Community
-- **Donation Block**: Added a support/donation block in the Dashboard to allow users to support the project.
-- **Dynamic Documentation**: `install_guide.php` and `technical_compliance.php` now dynamically display the current version number and localized subtitles.
-- **Improved Installation Guide**: Clarified steps in the installation guide and localized missing Spanish translations (blocking scripts, log permissions).
-- **Branding Freedom**: Generalized the license visibility notice and refactored branding logic to be internal, removing user-config dependencies.
-- **UI Tweaks**: Improved dashboard layout and fixed relative links.
+### v1.3.2 (Latest) - Reliability & Security Hardening
+- **System Self-Test Tool**: Added `check_system.php` dashboard utility to verify PHP version, folder permissions, and security.
+- **Security Fixes**: Implemented Bcrypt password hashing for the admin dashboard.
+- **One-Click Repair**: Added "Auto-Fix" functionality to the system check for missing `.htaccess` files.
+- **Apache License 2.0**: Migrated to Apache License 2.0 for better legal clarity and liability protection.
+- **Full Localization**: Localized the entire admin toolset (System Check, Security Warnings, and Manuals) into IT, EN, and ES.
 
-### v1.3.0 (Current) - Auto-Installation
-- **One-Click Installer**: Added an auto-install card in the Dashboard that scans for `footer.php` or `index.php` and injects the banner code automatically.
-- **Smart Restore**: Ability to restore original files from backup if something goes wrong.
-- **Improved Dashboard**: Added scanning UI and feedback messages.
+### v1.3.1 - Community & Donations
+- **Donation Block**: Added a support/donation block in the Dashboard.
+- **Dynamic Documentation**: `install_guide.php` and `technical_compliance.php` now show dynamic versioning.
+- **Branding Freedom**: Refactored branding logic to be internal.
+
+### v1.3.0 - Auto-Installation
+- **One-Click Installer**: Added an auto-install card in the Dashboard.
+- **Smart Restore**: Ability to restore original files from backup.
 
 ### v1.2.1 - Transparency & Hardening
 - **Dynamic Privacy Linking**: Added support for `{{privacy_url}}` placeholder in translation files and a configurable privacy URL in the Admin.

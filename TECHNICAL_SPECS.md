@@ -36,3 +36,16 @@ To block third-party scripts (e.g., Facebook Pixel, LinkedIn) that do not suppor
 ```
 
 These scripts will automatically execute only after the user grants consent for the specific category.
+
+## 6. Security & Reliability
+- **Admin Authentication**: Passwords for the administrative dashboard are secured using `password_hash()` (Bcrypt) to prevent exposure in case of file leaks.
+- **Log Security**: The `logs/` directory is protected via a multi-version compatible `.htaccess` file, denying all direct web access to the CSV audit trails.
+- **System Integrity Tool**: A built-in "System Self-Test" allows administrators to verify PHP requirements, directory permissions, and configuration health in real-time.
+- **IP Anonymization**: To adhere to the principle of "Data Minimization", the last octet of IPv4 addresses and the first 3 blocks of IPv6 addresses are masked before being recorded in the proof-of-consent logs.
+
+## 7. Licensing
+The project is licensed under the **Apache License 2.0**. This selection provides:
+- **Liability Protection**: Explicitly limits the author's liability and provides indemnity.
+- **Commercial Use**: Permits free use in commercial and private projects.
+- **Grant of Patent Rights**: Includes an explicit grant of patent rights from contributors to users.
+- **Redistribution**: Allows for modification and redistribution under specific conditions.
