@@ -1116,7 +1116,7 @@ foreach ($enabled_langs_to_load as $lang) {
                 <div
                     style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 20px;">
                     <h2 style="border:none; padding:0; margin:0;">📄 <?php echo $t['edit_policy']; ?></h2>
-                    <a href="preview_standalone.php" target="_blank"
+                    <a href="preview.php" target="_blank"
                         style="background: #334155; color: #f59e0b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600; border: 1px solid #f59e0b;">👁️
                         Preview Policy</a>
                 </div>
