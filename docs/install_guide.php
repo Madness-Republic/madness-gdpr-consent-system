@@ -154,9 +154,10 @@ if (!isset($gdpr_version))
         </header>
 
         <section class="card">
+            <?php $gdpr_folder = basename(dirname(__DIR__)); ?>
             <h2><span class="step-number">1</span> <?php echo $guide['step1_title']; ?></h2>
             <p><?php echo $guide['step1_desc']; ?></p>
-            <code>&lt;?php include_once 'gdpr/banner.php'; ?&gt;</code>
+            <code>&lt;?php include_once __DIR__ . '/<?php echo $gdpr_folder; ?>/banner.php'; ?&gt;</code>
             <div class="note">
                 <?php echo $guide['step1_note']; ?>
             </div>
@@ -165,7 +166,7 @@ if (!isset($gdpr_version))
         <section class="card">
             <h2><span class="step-number">2</span> <?php echo $guide['step2_title']; ?></h2>
             <p><?php echo $guide['step2_desc']; ?></p>
-            <code>&lt;?php include_once 'gdpr/policy.php'; ?&gt;</code>
+            <code>&lt;?php include_once __DIR__ . '/<?php echo $gdpr_folder; ?>/policy.php'; ?&gt;</code>
             <div class="note">
                 <?php echo $guide['step2_note']; ?>
                 <br><br>

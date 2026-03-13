@@ -41,6 +41,7 @@ These scripts will automatically execute only after the user grants consent for 
 - **Admin Authentication**: Passwords for the administrative dashboard are secured using `password_hash()` (Bcrypt) to prevent exposure in case of file leaks.
 - **Log Security**: The `logs/` directory is protected via a multi-version compatible `.htaccess` file, denying all direct web access to the CSV audit trails.
 - **System Integrity Tool**: A built-in "System Self-Test" allows administrators to verify PHP requirements, directory permissions, and configuration health in real-time.
+- **Name-Agnostic Deployment**: The auto-installer dynamically detects the installation directory name, ensuring robust path injection regardless of the folder's name on the server.
 - **IP Anonymization**: To adhere to the principle of "Data Minimization", the last octet of IPv4 addresses and the first 3 blocks of IPv6 addresses are masked before being recorded in the proof-of-consent logs.
 
 ## 7. Licensing

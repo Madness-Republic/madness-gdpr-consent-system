@@ -57,7 +57,9 @@ function get_relative_gdpr_path($target_abs_path)
     // Generate prefix (e.g. "../")
     $prefix = $depth == 0 ? '' : str_repeat('../', $depth);
 
-    return $prefix . 'gdpr/banner.php';
+    // Dynamically determine the GDPR folder name
+    $gdpr_folder = basename(dirname(__DIR__));
+    return $prefix . $gdpr_folder . '/banner.php';
 }
 
 // ACTION: SCAN

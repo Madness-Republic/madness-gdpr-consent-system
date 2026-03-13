@@ -8,15 +8,13 @@ $gdpr_company_vat = 'IT03989750926';
 $gdpr_company_email = 'amministrazione@quantumsport.it';
 
 // 2. Technical Settings
-$gdpr_ga4_id = 'G-5HL3QJT8MT'; // Google Analytics 4 Measurement ID
-$gdpr_google_ads_id = 'AW-17847747259'; // Google Ads Measurement ID
+$gdpr_ga4_id = 'G-XXXXXXXX'; // Google Analytics 4 Measurement ID
+$gdpr_google_ads_id = 'AW-XXXXXXXXX'; // Google Ads Measurement ID
 $gdpr_cookie_duration = 180; // Days
 $gdpr_default_lang = 'it';
 $gdpr_privacy_url = 'privacy.php';
-$gdpr_enabled_languages = array (
-  0 => 'en',
-  1 => 'it',
-);
+$gdpr_enable_branding = true; // Show 'Madness' Branding
+$gdpr_enabled_languages = ['it', 'en'];
 
 // 3. Style Settings
 $gdpr_col_primary = '#f09100';
@@ -25,15 +23,15 @@ $gdpr_col_accept_2 = '#ff4d4d';
 $gdpr_col_secondary = '#cccccc';
 $gdpr_col_bg = '#1e1e1e';
 $gdpr_col_text = '#ffffff';
-$gdpr_bg_opacity = 40;
+$gdpr_bg_opacity = 95;
 $gdpr_admin_pass = '$2y$12$4T/fgHwpNXPPxcU4.whs.OVnUMHNY3CH3B/bKN3VeL6t/L3U7wmOq';
 
 // 4. Text Settings
 $gdpr_text_title_en = 'We take your Privacy seriously';
-$gdpr_text_desc_en = 'This website uses cookies to enhance your experience. You can accept all cookies or customize your preferences. <a href="/privacy.php" target="_blank" style="color: inherit; text-decoration: underline;">Read our Cookie Policy</a>';
+$gdpr_text_desc_en = 'We use cookies to improve your experience, analyze traffic and personalize content.';
 $gdpr_text_title_it = 'Prendiamo sul serio la tua Privacy';
-$gdpr_text_desc_it = 'Utilizziamo cookie per migliorare la tua esperienza, analizzare il traffico e personalizzare i contenuti. Leggi la <a href=\'privacy.php\' style=\'color: #fff; text-decoration: underline;\'>Cookie Policy</a>. Puoi accettare tutti i cookie, rifiutarli o gestire le tue preferenze.';\n\n// 5. Branding (MANDATORY per License)
-// Modifying these lines to hide branding is a violation of the license.
-$gdpr_enable_branding = true;
-$gdpr_brand_name = 'Madness GDPR Consent System v1.3.3';
+$gdpr_text_desc_it = 'Utilizziamo cookie per migliorare la tua esperienza, analizzare il traffico e personalizzare i contenuti.';
+
+// Application Version
+define('GDPR_SYSTEM_VERSION', '1.3.4');
 ?>

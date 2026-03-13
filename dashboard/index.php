@@ -185,9 +185,11 @@ if (!isset($gdpr_company_address)) $gdpr_company_address = '';
 if (!isset($gdpr_company_vat)) $gdpr_company_vat = '';
 if (!isset($gdpr_company_email)) $gdpr_company_email = '';
 if (!isset($gdpr_ga4_id)) $gdpr_ga4_id = '';
+if (!isset($gdpr_google_ads_id)) $gdpr_google_ads_id = '';
 if (!isset($gdpr_cookie_duration)) $gdpr_cookie_duration = 180;
 if (!isset($gdpr_default_lang)) $gdpr_default_lang = 'it';
 if (!isset($gdpr_privacy_url)) $gdpr_privacy_url = 'privacy.php';
+if (!isset($gdpr_enable_branding)) $gdpr_enable_branding = true;
 
 // Default Colors
 if (!isset($gdpr_col_primary)) $gdpr_col_primary = '#f09100';
@@ -222,9 +224,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $c_vat = trim($_POST['company_vat']);
     $c_email = trim($_POST['company_email']);
     $g_id = trim($_POST['ga4_id']);
+    $ads_id = trim($_POST['google_ads_id']);
     $c_dur = (int) $_POST['cookie_duration'];
     $d_lang = trim($_POST['default_lang']);
     $p_url = trim($_POST['privacy_url'] ?? 'privacy.php');
+    $en_branding = isset($_POST['enable_branding']) ? true : false;
 
     // Handle Password Change
     $new_pass_hash = $gdpr_admin_pass;
@@ -271,9 +275,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
     $config_content .= "\$gdpr_company_email = " . var_export($c_email, true) . ";\n\n";
     $config_content .= "// 2. Technical Settings\n";
     $config_content .= "\$gdpr_ga4_id = " . var_export($g_id, true) . "; // Google Analytics 4 Measurement ID\n";
+    $config_content .= "\$gdpr_google_ads_id = " . var_export($ads_id, true) . "; // Google Ads Measurement ID\n";
     $config_content .= "\$gdpr_cookie_duration = $c_dur; // Days\n";
     $config_content .= "\$gdpr_default_lang = " . var_export($d_lang, true) . ";\n";
     $config_content .= "\$gdpr_privacy_url = " . var_export($p_url, true) . ";\n";
+    $config_content .= "\$gdpr_enable_branding = " . var_export($en_branding, true) . "; // Show 'Madness' Branding\n";
 
     $config_content .= "\$gdpr_enabled_languages = " . var_export($enabled_langs, true) . ";\n\n";
     $config_content .= "// 3. Style Settings\n";
@@ -304,9 +310,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
         $gdpr_company_vat = $c_vat;
         $gdpr_company_email = $c_email;
         $gdpr_ga4_id = $g_id;
+        $gdpr_google_ads_id = $ads_id;
         $gdpr_cookie_duration = $c_dur;
         $gdpr_default_lang = $d_lang;
         $gdpr_privacy_url = $p_url;
+        $gdpr_enable_branding = $en_branding;
         $gdpr_enabled_languages = $enabled_langs;
 
         $gdpr_col_primary = $col_p;
@@ -703,6 +711,7 @@ foreach ($enabled_langs_to_load as $lang) {
             <nav class="nav-links" style="display:flex; align-items:center; gap:10px;">
                 <a href="../docs/install_guide.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem;">📖 <?php echo $t['install_guide']; ?></a>
                 <a href="check_system.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px;">🔍 <?php echo $t['system_check']; ?></a>
+                <a href="javascript:void(0)" id="update-nav-link" onclick="scrollToUpdate()" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px; display: none;">✨ <?php echo $t['update_available']; ?> <span style="display:inline-block; width:8px; height:8px; background:#ef4444; border-radius:50%; margin-left:2px;"></span></a>
                 <a href="../docs/technical_compliance.php?lang=<?php echo $ui_lang; ?>" style="color: #94a3b8; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-left: 10px;">🛠️ <?php echo $t['tech_doc']; ?></a>
                 <select onchange="window.location.href='?lang='+this.value" style="background:#0f172a; color:#f59e0b; border:1px solid #f59e0b; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:600; outline:none; margin-left: 10px; width: auto !important;">
                     <?php foreach($available_langs as $code => $name): ?>
@@ -718,6 +727,23 @@ foreach ($enabled_langs_to_load as $lang) {
         <?php if ($success_msg): ?>
             <div class="success"><?php echo $success_msg; ?></div>
         <?php endif; ?>
+
+        <div id="update-alert" class="card" style="display:none; border:2px solid #ef4444; background: rgba(239, 68, 68, 0.05);">
+            <h2 style="color: #ef4444; border-bottom-color: rgba(239, 68, 68, 0.2);">✨ <?php echo $t['update_title']; ?></h2>
+            <div id="update-details" style="margin-bottom: 20px;">
+                <p style="font-weight: bold; font-size: 1.1rem; color: #f87171;"><?php echo $t['update_ready']; ?></p>
+                <div style="display:flex; gap: 20px; font-size: 0.9rem; color: #cbd5e1;">
+                    <span><?php echo $t['update_current']; ?> <code id="local-v">...</code></span>
+                    <span><?php echo $t['update_latest']; ?> <code id="remote-v" style="color:#34d399; background:rgba(52,211,153,0.1); padding:2px 6px; border-radius:4px;">...</code></span>
+                </div>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
+                    <?php echo $t['update_warning']; ?>
+                </p>
+            </div>
+            <button type="button" id="btn-perform-update" onclick="doUpdate()" style="background: #10b981; color: white; border:none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s;">
+                🚀 <?php echo $t['update_btn']; ?>
+            </button>
+        </div>
 
         <form method="POST">
             <input type="hidden" name="save_config" value="1">
@@ -786,6 +812,13 @@ foreach ($enabled_langs_to_load as $lang) {
                     <input type="text" name="ga4_id" value="<?php echo htmlspecialchars($gdpr_ga4_id); ?>"
                         placeholder="G-...">
                     <div class="help-text"><?php echo $t['ga4_help']; ?></div>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo $t['google_ads_id']; ?></label>
+                    <input type="text" name="google_ads_id" value="<?php echo htmlspecialchars($gdpr_google_ads_id); ?>"
+                        placeholder="AW-...">
+                    <div class="help-text"><?php echo $t['google_ads_help']; ?></div>
                 </div>
 
                 <div class="form-group">
@@ -1128,7 +1161,14 @@ foreach ($enabled_langs_to_load as $lang) {
                 <div class="branding-notice">
                     <?php echo $t['branding_notice']; ?>
                     <br><br>
-                    <a href="../LICENSE" target="_blank" style="color: #f59e0b; font-weight: 600; text-decoration: underline;">📄 <?php echo $t['view_license']; ?></a>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #f59e0b; font-weight: 600;">
+                            <input type="checkbox" name="enable_branding" <?php echo $gdpr_enable_branding ? 'checked' : ''; ?> style="width: 20px; height: 20px;">
+                            <?php echo $t['enable_branding']; ?>
+                        </label>
+                        <div class="help-text" style="margin-left: 30px;"><?php echo $t['branding_help']; ?></div>
+                    </div>
+                    <a href="../LICENSE" target="_blank" style="color: #94a3b8; font-weight: 500; text-decoration: underline; font-size: 0.85rem;">📄 <?php echo $t['view_license']; ?></a>
 
                     <p style="margin-top: 20px; font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #334155; padding-top: 10px;">
                         <?php echo $gdpr_brand_name; ?>
@@ -1312,6 +1352,54 @@ foreach ($enabled_langs_to_load as $lang) {
     </script>
 
     <script>
+        // Update Logic
+        async function checkUpdate() {
+            try {
+                const res = await fetch('check_update.php');
+                const data = await res.json();
+                if(data.success && data.update_available) {
+                    document.getElementById('update-nav-link').style.display = 'inline-block';
+                    document.getElementById('update-alert').style.display = 'block';
+                    document.getElementById('local-v').textContent = data.local_version;
+                    document.getElementById('remote-v').textContent = data.remote_version;
+                }
+            } catch(e) { console.error('Update check failed', e); }
+        }
+
+        function scrollToUpdate() {
+            document.getElementById('update-alert').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function doUpdate() {
+            const btn = document.getElementById('btn-perform-update');
+            if(!confirm("<?php echo addslashes($t['update_warning']); ?>")) return;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span>⌛ Updating...</span>';
+            btn.style.opacity = '0.7';
+
+            try {
+                const res = await fetch('perform_update.php', { method: 'POST' });
+                const data = await res.json();
+                if(data.success) {
+                    alert("<?php echo addslashes($t['update_success']); ?>");
+                    window.location.reload();
+                } else {
+                    alert("<?php echo addslashes($t['update_error']); ?>: " + (data.error || 'Unknown error'));
+                    btn.disabled = false;
+                    btn.innerHTML = "🚀 <?php echo addslashes($t['update_btn']); ?>";
+                    btn.style.opacity = '1';
+                }
+            } catch(e) {
+                alert("Connection error: " + e);
+                btn.disabled = false;
+                btn.innerHTML = "🚀 <?php echo addslashes($t['update_btn']); ?>";
+                btn.style.opacity = '1';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkUpdate);
+
         document.getElementById('load-donation-btn')?.addEventListener('click', function () {
             const btn = this;
             const container = document.getElementById('donation-container');

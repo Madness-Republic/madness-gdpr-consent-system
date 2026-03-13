@@ -1,5 +1,5 @@
 # Madness GDPR Consent System
-![Version](https://img.shields.io/badge/version-1.3.3-orange.svg)
+![Version](https://img.shields.io/badge/version-1.3.4-orange.svg)
 ![Last Update](https://img.shields.io/github/last-commit/Madness-Republic/madness-gdpr-consent-system)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
@@ -12,7 +12,7 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 - **Google Ads Integration**: Built-in support for Google Ads (AW-...) alongside GA4.
 - **Branding Toggle**: Conditional display of system branding based on your license and preferences.
 - **Proof of Consent Logging**: Server-side CSV logging of consent actions (Timestamp, Masked IP, Consent ID) for legal compliance.
-- **Auto-Installation**: One-click banner injection for non-technical users.
+- **Auto-Installation**: One-click, name-agnostic banner injection for non-technical users. Automatically detects folder names and uses robust `__DIR__` based pathing.
 - **Equal Prominence UI**: Compliant design with identical "Accept" and "Reject" buttons to avoid "dark patterns".
 - **Google Consent Mode v2**: Full support for both Basic and Advanced GCM v2 signals.
 - **Generic Script Blocking**: Easily block any 3rd party script (Pixel, LinkedIn, etc.) using `type="text/plain"`.
@@ -103,7 +103,12 @@ The system uses CSS variables. You can override them in your main CSS:
 
 ## Update Log
 
-### v1.3.3 (Latest) - Conversion & Branding Optimization
+### v1.3.4 (Latest) - Dashboard & Deployment Optimization
+- **UI Configuration**: Added Google Ads ID and Branding Toggle directly in the Admin Dashboard.
+- **Improved Auto-Installer**: Re-engineered the installation script to be name-agnostic (automatically detects the GDPR folder name) and uses more robust PHP inclusion logic (`__DIR__`).
+- **Standardized Sample**: Cleaned up `config.php.sample` to reflect the latest standard configuration.
+
+### v1.3.3 - Conversion & Branding Optimization
 - **Google Ads Support**: Added integrated support for Google Ads Measurement IDs (`AW-...`) in `config.php` and `consent_manager.js`.
 - **Branding Toggle**: Added `$gdpr_enable_branding` configuration to conditionally show/hide system credits in the banner and modal.
 - **Stability Fixes**: Resolved critical HTML structural bugs and JavaScript syntax errors affecting banner visibility.
