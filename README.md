@@ -1,5 +1,5 @@
 # Madness GDPR Consent System
-![Version](https://img.shields.io/badge/version-1.3.2-orange.svg)
+![Version](https://img.shields.io/badge/version-1.3.3-orange.svg)
 ![Last Update](https://img.shields.io/github/last-commit/Madness-Republic/madness-gdpr-consent-system)
 
 Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-language support, Admin Panel, and Proof of Consent.
@@ -9,6 +9,8 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 
 ## Features
 - **Strict Compliance (Basic Mode)**: Blocks Google Analytics and third-party scripts totally until explicit consent is given (satisfies Cookiebot/Iubenda scanners).
+- **Google Ads Integration**: Built-in support for Google Ads (AW-...) alongside GA4.
+- **Branding Toggle**: Conditional display of system branding based on your license and preferences.
 - **Proof of Consent Logging**: Server-side CSV logging of consent actions (Timestamp, Masked IP, Consent ID) for legal compliance.
 - **Auto-Installation**: One-click banner injection for non-technical users.
 - **Equal Prominence UI**: Compliant design with identical "Accept" and "Reject" buttons to avoid "dark patterns".
@@ -31,14 +33,13 @@ Lightweight, dependency-free, and modular GDPR Cookie Consent system with multi-
 2. Ensure `gdpr/logs/` has write permissions (chmod 755/775).
 3. Access the Admin Panel at yourdomain.com/gdpr/dashboard/index.php (Default password: `password`).
     *   *Security Note: Change the password immediately in settings.*
-4. Configure your settings (Company info, GA4 ID, Enabled Languages).
+4. Configure your settings (Company info, GA4 ID, Google Ads ID, Enabled Languages).
 5. **Integrate the Banner**:
    *   **Option A (Automatic)**: In the Admin Dashboard, look for the "Auto Installation" card. Click **Scan Site**, choose the file where you want to inject the banner (usually `footer.php`), and click **Install**.
    *   **Option B (Manual)**: Manually include the banner in your main layout file (e.g., `footer.php` or `index.php`) right before the closing `</body>` tag:
        ```php
        <?php include_once 'gdpr/banner.php'; ?>
        ```
-   ```
 6. **Run System Check**: Login to the dashboard, go to the top bar, and click **🔍 System Check**. Fix any reported errors (red marks) to ensure logs are protected and writable.
 
 ### WordPress Integration
@@ -69,7 +70,8 @@ For scripts that don't support Consent Mode (like Facebook Pixel), modify the ta
 ### Admin Panel
 The admin panel (`gdpr/dashboard/index.php`) allows you to:
 - Manage **Company Data** (automatically injected into policies).
-- Toggle **Google Analytics 4** integration.
+- Toggle **Google Analytics 4** and **Google Ads** integration.
+- Control **Branding Visibility** via the `$gdpr_enable_branding` setting.
 - Configure **Custom Privacy Policy URL** for dynamic linking.
 - Enable/Disable supported languages.
 - Customize **Banner Texts** for each language.
@@ -101,7 +103,12 @@ The system uses CSS variables. You can override them in your main CSS:
 
 ## Update Log
 
-### v1.3.2 (Latest) - Reliability & Security Hardening
+### v1.3.3 (Latest) - Conversion & Branding Optimization
+- **Google Ads Support**: Added integrated support for Google Ads Measurement IDs (`AW-...`) in `config.php` and `consent_manager.js`.
+- **Branding Toggle**: Added `$gdpr_enable_branding` configuration to conditionally show/hide system credits in the banner and modal.
+- **Stability Fixes**: Resolved critical HTML structural bugs and JavaScript syntax errors affecting banner visibility.
+
+### v1.3.2 - Reliability & Security Hardening
 - **System Self-Test Tool**: Added `check_system.php` dashboard utility to verify PHP version, folder permissions, and security.
 - **Security Fixes**: Implemented Bcrypt password hashing for the admin dashboard.
 - **One-Click Repair**: Added "Auto-Fix" functionality to the system check for missing `.htaccess` files.
@@ -142,3 +149,4 @@ The system uses CSS variables. You can override them in your main CSS:
 - Initial release.
 - Core cookie consent logic & GCM v2 support.
 - JSON-based multi-language support.
+port.
